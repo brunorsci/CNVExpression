@@ -2,8 +2,9 @@
 
 **Integration of Copy Number Variations with Gene Expression Analysis**
 
-[![R-CMD-check](https://github.com/brunorsci/CNVExpression/workflows/R-CMD-check/badge.svg)](https://github.com/brunorsci/CNVExpression/actions)
+[![R-CMD-check](https://github.com/brunorsci/CNVExpression/actions/workflows/R-CMD-check/badge.svg)](https://github.com/brunorsci/CNVExpression/actions)
 [![Bioconductor](https://img.shields.io/badge/Bioconductor-CNVExpression-blue)](https://bioconductor.org/packages/CNVExpression)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23738808.svg)](https://doi.org/10.5281/zenodo.23738808)
 
 ## Overview
 
@@ -167,10 +168,25 @@ The main output is a data frame with:
 
 ## Citation
 
-If you use CNVExpression in your research, please cite:
+If you use CNVExpression, please cite the archived release:
+**[10.5281/zenodo.23738808](https://doi.org/10.5281/zenodo.23738808)**
 
-> Assuncao BR (2025). CNVExpression: Integration of Copy Number Variations with
-> Gene Expression Analysis. R package version 0.99.0.
+<details>
+<summary>BibTeX</summary>
+
+```bibtex
+@software{cnvexpression_2026,
+  author    = {Assuncao, Bruno Rodrigo},
+  title     = {CNVExpression: integration of copy number variations with gene expression analysis},
+  version   = {0.99.0},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23738808},
+  url       = {https://doi.org/10.5281/zenodo.23738808}
+}
+```
+
+</details>
 
 ## Related Packages
 

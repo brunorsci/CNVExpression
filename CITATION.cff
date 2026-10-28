@@ -7,7 +7,12 @@ authors:
     given-names: Bruno Rodrigo
     email: brunorodrigoassuncao@gmail.com
     # orcid: "https://orcid.org/0000-0000-0000-0000"   # fill in before releasing
-repository-code: "https://github.com/brunorsci/CNVExpression_v1"
+repository-code: "https://github.com/brunorsci/CNVExpression"
+doi: "10.5281/zenodo.23738808"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23738808"
+    description: "Archived release v0.99.0"
 license: Artistic-2.0
 version: 0.99.0
 date-released: "2026-10-28"

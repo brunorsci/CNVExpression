@@ -1,0 +1,12 @@
+{
+  "title": "CNVExpression: integration of copy number variations with gene expression analysis",
+  "upload_type": "software",
+  "license": "Artistic-2.0",
+  "version": "0.99.0",
+  "creators": [ { "name": "Assuncao, Bruno Rodrigo" } ],
+  "keywords": [
+    "copy number variation", "gene expression", "RNA-seq", "cnv-eQTL",
+    "cancer genomics", "Bioconductor", "R"
+  ],
+  "description": "R/Bioconductor package integrating copy number variation with gene expression to identify genes whose expression is significantly affected by copy number alterations. Builds on CNVRanger for population-level CNV analysis and provides preprocessing, correlation analysis, result filtering, gene annotation and publication-ready visualisations."
+}

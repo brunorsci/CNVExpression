@@ -4,7 +4,7 @@ Title: Integration of Copy Number Variations with Gene Expression Analysis
 Version: 0.99.0
 Authors@R: c(
     person("Bruno Rodrigo", "Assuncao",
-           email = "bruno.assuncao@example.com",
+           email = "brunorodrigoassuncao@gmail.com",
            role = c("aut", "cre"),
            comment = c(ORCID = "0000-0000-0000-0000")))
 Description: CNVExpression provides a comprehensive workflow for integrating

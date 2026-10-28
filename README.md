@@ -30,8 +30,33 @@ BiocManager::install("CNVExpression")
 ### From GitHub (development version)
 
 ```r
-devtools::install_github("brunorsci/CNVExpression")
+devtools::install_github("brunorsci/CNVExpression_v1")
 ```
+
+## Try it in one minute
+
+The package ships a small example dataset, so you can confirm the
+installation works before pointing it at real data. No download needed.
+
+```r
+library(CNVExpression)
+
+cnv  <- load_cnv_data(system.file("extdata", "example_cnv.tsv", package = "CNVExpression"))
+expr <- load_expression_data(system.file("extdata", "example_expression.tsv", package = "CNVExpression"))
+
+results <- cnv_expression_pipeline(cnv_data = cnv, expression_data = expr,
+                                   genome = "GRCh38")
+print_summary(results)
+plot_top_hits(results$results_raw, n = 10)
+```
+
+Ten samples, a handful of segments and thirty genes — enough to exercise every
+step of the pipeline and produce a plot, and small enough to finish while you
+watch.
+
+For real data, the package expects CNV segments in DNAcopy format and an
+expression count matrix; TCGA downloads through the GDC portal come in exactly
+this shape.
 
 ## Quick Start
 

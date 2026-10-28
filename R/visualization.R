@@ -262,6 +262,111 @@ plot_volcano <- function(results,
     return(p)
 }
 
+#' Plot Top Hits
+#'
+#' Create a lollipop plot of the top N cnv-eQTL associations ranked by
+#' significance, colored by direction of effect (activation vs. repression).
+#'
+#' @param results Data frame with CNV-expression results (e.g. results_raw or
+#'   results_filtered from cnv_expression_pipeline), containing one or more
+#'   logFC.CN* columns and a p-value column
+#' @param n Number of top associations to show (default: 20)
+#' @param pvalue_col Column name for p-value used for ranking
+#' @param seqnames_col,start_col,end_col Columns identifying the CNV region,
+#'   used to deduplicate repeated regions and to build point labels
+#' @param label_col Optional column with a display label (e.g. gene symbol)
+#'   for each region; if NULL, the region coordinates are used
+#' @param title Plot title
+#'
+#' @details For each association, the "dominant" logFC is the value with the
+#'   largest absolute magnitude among all available logFC.CN* columns (CN0,
+#'   CN1, CN3, CN4), matching the copy-number state responsible for the
+#'   significant association. This mirrors how the article's Table 3 reports
+#'   a single CN state/logFC per gene.
+#'
+#' @return ggplot object
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' plot_top_hits(results$results_raw, n = 20)
+#' }
+plot_top_hits <- function(results,
+                           n = 20,
+                           pvalue_col = "PValue",
+                           seqnames_col = "seqnames",
+                           start_col = "start",
+                           end_col = "end",
+                           label_col = NULL,
+                           title = "Top Associações cnv-eQTL") {
+
+    if (!requireNamespace("ggplot2", quietly = TRUE)) {
+        stop("Package 'ggplot2' required. Install with: install.packages('ggplot2')")
+    }
+
+    logfc_cols <- grep("^logFC", colnames(results), value = TRUE)
+    if (length(logfc_cols) == 0) {
+        stop("No logFC.CN* columns found in 'results'")
+    }
+
+    # region key for deduplication (same region tested against >1 gene window)
+    region_key <- paste(results[[seqnames_col]], results[[start_col]], results[[end_col]])
+    ord <- order(results[[pvalue_col]])
+    results <- results[ord, ]
+    region_key <- region_key[ord]
+    results <- results[!duplicated(region_key), ]
+
+    top <- utils::head(results, n)
+
+    # dominant logFC = largest-magnitude non-NA value among the CN* columns
+    logfc_mat <- as.matrix(top[, logfc_cols, drop = FALSE])
+    dominant_idx <- apply(logfc_mat, 1, function(r) {
+        if (all(is.na(r))) return(NA_integer_)
+        which.max(abs(r))
+    })
+    dominant_logfc <- vapply(seq_len(nrow(top)), function(i) {
+        idx <- dominant_idx[i]
+        if (is.na(idx)) NA_real_ else logfc_mat[i, idx]
+    }, numeric(1))
+
+    plot_data <- data.frame(
+        label = if (!is.null(label_col) && label_col %in% colnames(top)) {
+            top[[label_col]]
+        } else {
+            paste0(top[[seqnames_col]], ":", top[[start_col]], "-", top[[end_col]])
+        },
+        neg_log_p = -log10(top[[pvalue_col]]),
+        logfc = dominant_logfc,
+        stringsAsFactors = FALSE
+    )
+    plot_data$direction <- ifelse(plot_data$logfc >= 0, "Ativação (logFC > 0)", "Repressão (logFC < 0)")
+    # order top-to-bottom by significance
+    plot_data$label <- factor(plot_data$label, levels = rev(plot_data$label))
+
+    p <- ggplot2::ggplot(plot_data, ggplot2::aes(
+        x = .data$neg_log_p,
+        y = .data$label,
+        color = .data$direction
+    )) +
+        ggplot2::geom_segment(ggplot2::aes(x = 0, xend = .data$neg_log_p,
+                                            y = .data$label, yend = .data$label),
+                               color = "gray70") +
+        ggplot2::geom_point(size = 3) +
+        ggplot2::scale_color_manual(
+            values = c("Ativação (logFC > 0)" = "red", "Repressão (logFC < 0)" = "blue")
+        ) +
+        ggplot2::labs(
+            title = title,
+            x = expression(-log[10](P~valor)),
+            y = NULL,
+            color = NULL
+        ) +
+        ggplot2::theme_minimal() +
+        ggplot2::theme(axis.text.y = ggplot2::element_text(size = 8))
+
+    return(p)
+}
+
 #' Plot Correlation Scatter
 #'
 #' Create a scatter plot showing CNV-expression correlation for a gene.
@@ -421,6 +526,7 @@ generate_report_plots <- function(results,
         plots$cnv_types <- plot_cnv_types(results$cnv_processed)
         plots$cnv_by_chrom <- plot_cnv_by_chromosome(results$cnv_processed)
         plots$cnv_length <- plot_cnv_length(results$cnv_processed)
+        plots$cnv_per_sample <- plot_cnv_per_sample(results$cnv_processed)
     }
 
     # Volcano plot
@@ -429,6 +535,11 @@ generate_report_plots <- function(results,
         if (length(logfc_cols) > 0) {
             plots$volcano <- plot_volcano(results$results_filtered, logfc_col = logfc_cols[1])
         }
+    }
+
+    # Top hits (ranked by significance, among the raw/tested associations)
+    if ("results_raw" %in% names(results) && nrow(results$results_raw) > 0) {
+        plots$top_hits <- plot_top_hits(results$results_raw, n = 20)
     }
 
     # Save plots if output directory specified

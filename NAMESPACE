@@ -43,6 +43,7 @@ export(plot_cnv_length)
 export(plot_volcano)
 export(plot_correlation_scatter)
 export(plot_cnv_per_sample)
+export(plot_top_hits)
 export(generate_report_plots)
 
 # Imports from other packages
